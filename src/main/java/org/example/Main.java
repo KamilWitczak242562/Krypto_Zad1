@@ -16,7 +16,7 @@ public class Main extends Application {
 
      //wczytywanie pliku do strumienia działa a to niżej przekształca strumień danych na plik. Może się przyda.
 
-gi
+
         launch();
     }
 
