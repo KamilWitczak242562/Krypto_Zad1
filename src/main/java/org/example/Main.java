@@ -11,8 +11,8 @@ public class Main extends Application {
         FileToBytes fileToBytes = new FileToBytes();
         fileToBytes.load();
 
-       // BytesToFile bytesToFile = new BytesToFile();
-        // bytesToFile.write();
+        //BytesToFile bytesToFile = new BytesToFile();
+        //bytesToFile.write();
 
      //wczytywanie pliku do strumienia działa a to niżej przekształca strumień danych na plik. Może się przyda.
 

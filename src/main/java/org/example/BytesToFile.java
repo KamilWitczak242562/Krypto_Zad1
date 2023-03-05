@@ -14,7 +14,7 @@ public class BytesToFile {
         String filePath = "E:\\Krypto_Zad1\\src\\main\\java\\org\\example\\fileTest.txt";
         try {
             byte[] bytes = FileToBytes.read(filePath);
-            // wykonaj jakieś operacje na strumieniu bitów
+            //
             BytesToFile.write("E:\\Krypto_Zad1\\src\\main\\java\\org\\example\\outputFile.txt", bytes);
         } catch (IOException e) {
             e.printStackTrace();
