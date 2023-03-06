@@ -22,6 +22,8 @@ public class EncryptionTextScene {
 
     private TextArea areaToWrite;
 
+    private TextArea areaAfterEncrypting;
+
     public EncryptionTextScene() {
         pane = new AnchorPane();
         stage = new Stage();
@@ -49,11 +51,11 @@ public class EncryptionTextScene {
         encrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                TextArea textArea = new TextArea();
-                textArea.setText(areaToWrite.getText());
-                textArea.setLayoutX(510);
-                textArea.setLayoutY(110);
-                pane.getChildren().add(textArea);
+                areaAfterEncrypting = new TextArea();
+                areaAfterEncrypting.setText(areaToWrite.getText());
+                areaAfterEncrypting.setLayoutX(510);
+                areaAfterEncrypting.setLayoutY(110);
+                pane.getChildren().add(areaAfterEncrypting);
             }
         });
         OurButton decrypt = new OurButton("Deszyfruj", 425, 450);

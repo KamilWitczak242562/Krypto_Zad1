@@ -22,6 +22,10 @@ public class EncryptionFileScene {
     private FileToBytes fileToBytes;
     private byte[] bytes;
 
+    private TextArea areaToEncrypt;
+
+    private TextArea areaAfterEncrypting;
+
     public EncryptionFileScene(Boolean whatToDo) {
         pane = new AnchorPane();
         stage = new Stage();
@@ -35,6 +39,12 @@ public class EncryptionFileScene {
         OurButton back = new OurButton("Powrót", 840, 440);
         OurButton loadFile = new OurButton("Wczytaj plik", 10, 60);
         OurButton saveFile = new OurButton("Zapisz plik", 790, 60);
+        saveFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                
+            }
+        });
         loadFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -43,11 +53,11 @@ public class EncryptionFileScene {
                 fileChooser.setTitle("Open file to encrypt");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytes = fileToBytes.load(path);
-                TextArea textArea = new TextArea();
-                textArea.setText(bytes.toString());
-                textArea.setLayoutX(10);
-                textArea.setLayoutY(110);
-                pane.getChildren().add(textArea);
+                areaToEncrypt = new TextArea();
+                areaToEncrypt.setText(bytes.toString());
+                areaToEncrypt.setLayoutX(10);
+                areaToEncrypt.setLayoutY(110);
+                pane.getChildren().add(areaToEncrypt);
             }
         });
         back.setOnAction(new EventHandler<ActionEvent>() {
@@ -68,11 +78,11 @@ public class EncryptionFileScene {
             encrypt.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    TextArea textArea = new TextArea();
-                    textArea.setText(bytes.toString());
-                    textArea.setLayoutX(510);
-                    textArea.setLayoutY(110);
-                    pane.getChildren().add(textArea);
+                    areaAfterEncrypting = new TextArea();
+                    areaAfterEncrypting.setText(areaToEncrypt.getText());
+                    areaAfterEncrypting.setLayoutX(510);
+                    areaAfterEncrypting.setLayoutY(110);
+                    pane.getChildren().add(areaAfterEncrypting);
                 }
             });
             pane.getChildren().add(encrypt);
@@ -82,6 +92,16 @@ public class EncryptionFileScene {
             OurButton loadKey = new OurButton("Wczytaj klucz", 10, 10);
             OurButton decrypt = new OurButton("Deszyfruj", 425, 400);
             loadKey.setPrefWidth(200);
+            decrypt.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    areaAfterEncrypting = new TextArea();
+                    areaAfterEncrypting.setText(areaToEncrypt.getText());
+                    areaAfterEncrypting.setLayoutX(510);
+                    areaAfterEncrypting.setLayoutY(110);
+                    pane.getChildren().add(areaAfterEncrypting);
+                }
+            });
             pane.getChildren().add(decrypt);
             pane.getChildren().add(loadKey);
         }
