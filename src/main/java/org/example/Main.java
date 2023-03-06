@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
 public class Main extends Application {
     public static void main(String[] args) {
 
@@ -28,8 +27,6 @@ public class Main extends Application {
 
         launch();
     }
-
-
 
 
     @Override
