@@ -5,7 +5,7 @@ import javafx.scene.text.Font;
 
 public class OurButton extends Button {
 
-    public OurButton(String text, int x, int y){
+    public OurButton(String text, int x, int y) {
         setText(text);
         setStyle("-fx-font: 24 arial;");
         setPrefHeight(39);
