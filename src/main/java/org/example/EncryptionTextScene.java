@@ -10,7 +10,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class EncryptionTextScene {
     private AnchorPane pane;
@@ -48,6 +51,12 @@ public class EncryptionTextScene {
         OurButton generate = new OurButton("Generuj klucz", 10, 10);
         OurButton saveKey = new OurButton("Zapisz klucz", 790, 10);
         OurButton encrypt = new OurButton("Szyfruj", 425, 400);
+        saveFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
         encrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {

@@ -13,6 +13,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class EncryptionFileScene {
 
     private AnchorPane pane;
@@ -25,6 +27,8 @@ public class EncryptionFileScene {
     private TextArea areaToEncrypt;
 
     private TextArea areaAfterEncrypting;
+
+    private BytesToFile bytesToFile;
 
     public EncryptionFileScene(Boolean whatToDo) {
         pane = new AnchorPane();
@@ -42,7 +46,15 @@ public class EncryptionFileScene {
         saveFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select file to save");
+                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                bytesToFile = new BytesToFile();
+                try {
+                    bytesToFile.write(path, bytes);
+                } catch (IOException e) {
+                    throw new RuntimeException("Nie udało się zapisać do pliku");
+                }
             }
         });
         loadFile.setOnAction(new EventHandler<ActionEvent>() {
