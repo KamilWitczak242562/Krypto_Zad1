@@ -1,3 +1,1 @@
-Hello, world!
-234234
-!@##$%^&*
+To jest tekst, który chcemy zapisać do pliku w postaci strumienia bitów.
