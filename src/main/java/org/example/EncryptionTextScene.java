@@ -3,6 +3,7 @@ package org.example;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -27,6 +28,12 @@ public class EncryptionTextScene {
 
     private TextArea areaAfterEncrypting;
 
+    private Label keyLabel;
+
+    private BytesToFile bytesToFile;
+
+    private byte[] bytes;
+
     public EncryptionTextScene() {
         pane = new AnchorPane();
         stage = new Stage();
@@ -48,22 +55,56 @@ public class EncryptionTextScene {
             }
         });
         OurButton saveFile = new OurButton("Zapisz do pliku", 790, 60);
-        OurButton generate = new OurButton("Generuj klucz", 10, 10);
-        OurButton saveKey = new OurButton("Zapisz klucz", 790, 10);
-        OurButton encrypt = new OurButton("Szyfruj", 425, 400);
         saveFile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select file to save");
+                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                bytesToFile = new BytesToFile();
+                try {
+                    bytesToFile.write(path, bytes);
+                } catch (IOException e) {
+                    throw new RuntimeException("Nie udało się zapisać do pliku");
+                }
             }
         });
+        OurButton generate = new OurButton("Generuj klucz", 10, 10);
+        generate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                keyLabel = new Label();
+                keyLabel.setLayoutX(220);
+                keyLabel.setLayoutY(10);
+                keyLabel.setText("A8CA-81SA-sDA91-Sad1S");
+                keyLabel.setPrefWidth(500);
+                keyLabel.setMaxHeight(100);
+                keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
+                pane.getChildren().add(keyLabel);
+            }
+        });
+        OurButton saveKey = new OurButton("Zapisz klucz", 790, 10);
+        saveKey.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select file to save");
+                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                try {
+                    bytesToFile.write(path, keyLabel.getText().getBytes());
+                } catch (IOException e) {
+                    throw new RuntimeException("Nie udało się zapisać do pliku");
+                }
+            }
+        });
+        OurButton encrypt = new OurButton("Szyfruj", 425, 400);
         encrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
                 areaAfterEncrypting.setText(areaToWrite.getText());
                 areaAfterEncrypting.setLayoutX(510);
-                areaAfterEncrypting.setLayoutY(110);
+                areaAfterEncrypting.setLayoutY(120);
                 pane.getChildren().add(areaAfterEncrypting);
             }
         });
@@ -82,7 +123,7 @@ public class EncryptionTextScene {
     private void createTextArea() {
         areaToWrite = new TextArea();
         areaToWrite.setLayoutX(10);
-        areaToWrite.setLayoutY(110);
+        areaToWrite.setLayoutY(120);
         pane.getChildren().add(areaToWrite);
     }
 
