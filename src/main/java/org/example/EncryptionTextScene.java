@@ -24,6 +24,8 @@ public class EncryptionTextScene {
 
     private String textToEncrypt;
 
+    private TextToBytes textToBytes;
+
     private TextArea areaToWrite;
 
     private TextArea areaAfterEncrypting;
@@ -102,7 +104,8 @@ public class EncryptionTextScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
-                areaAfterEncrypting.setText(areaToWrite.getText());
+                textToBytes = new TextToBytes();
+                areaAfterEncrypting.setText(textToBytes.bytesToText(textToBytes.textToBytes(areaToWrite.getText())));
                 areaAfterEncrypting.setLayoutX(510);
                 areaAfterEncrypting.setLayoutY(120);
                 pane.getChildren().add(areaAfterEncrypting);

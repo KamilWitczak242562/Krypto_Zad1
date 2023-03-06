@@ -3,14 +3,17 @@ package org.example;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class TextToBytes {
 
-    public static void write(String filePath, String text) throws IOException {
-        try (OutputStream outputStream = new FileOutputStream(filePath)) {
-            byte[] bytes = text.getBytes();  //przekształcamy tekst na tablicę bajtów
+    public static byte[] textToBytes(String text) {
+        byte[] bytes = text.getBytes();
+        return bytes;
+    }
 
-            outputStream.write(bytes); //zapis do pliku
-        }
+    public String bytesToText(byte[] bytes) {
+        String output = new String(bytes, StandardCharsets.UTF_8);
+        return output;
     }
 }
