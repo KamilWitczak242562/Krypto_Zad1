@@ -41,7 +41,14 @@ public class GUI {
             @Override
             public void handle(ActionEvent actionEvent) {
                 stage.close();
-                encryptionFileScene = new EncryptionFileScene();
+                encryptionFileScene = new EncryptionFileScene(true);
+            }
+        });
+        buttonDecryptingFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                stage.close();
+                encryptionFileScene = new EncryptionFileScene(false);
             }
         });
         pane.getChildren().add(buttonEncryptingFile);

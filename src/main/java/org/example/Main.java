@@ -8,13 +8,13 @@ import javafx.stage.Stage;
 public class Main extends Application {
     public static void main(String[] args) {
 
-        FileToBytes fileToBytes = new FileToBytes();
-        fileToBytes.load();
+        //FileToBytes fileToBytes = new FileToBytes();
+        //fileToBytes.load();
 
         //BytesToFile bytesToFile = new BytesToFile();
         //bytesToFile.write();
 
-     //wczytywanie pliku do strumienia działa a to niżej przekształca strumień danych na plik. Może się przyda.
+        //wczytywanie pliku do strumienia działa a to niżej przekształca strumień danych na plik. Może się przyda.
 
 
         launch();
