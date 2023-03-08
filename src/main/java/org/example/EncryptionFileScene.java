@@ -15,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.BitSet;
 
 public class EncryptionFileScene {
 
@@ -32,6 +33,10 @@ public class EncryptionFileScene {
     private BytesToFile bytesToFile;
 
     private Label keyLabel;
+
+    private OurKeyGenerator ourKeyGenerator;
+
+    private byte[] key;
 
     public EncryptionFileScene(Boolean whatToDo) {
         pane = new AnchorPane();
@@ -93,10 +98,12 @@ public class EncryptionFileScene {
             generate.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
+                    ourKeyGenerator = new OurKeyGenerator();
+                    key = ourKeyGenerator.getRandomKey();
                     keyLabel = new Label();
                     keyLabel.setLayoutX(220);
                     keyLabel.setLayoutY(10);
-                    keyLabel.setText("A8CA-81SA-sDA91-Sad1S");
+                    keyLabel.setText(ourKeyGenerator.toString(key));
                     keyLabel.setPrefWidth(500);
                     keyLabel.setMaxHeight(100);
                     keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -110,7 +117,7 @@ public class EncryptionFileScene {
                     fileChooser.setTitle("Select file to save");
                     String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                     try {
-                        bytesToFile.write(path, keyLabel.getText().getBytes());
+                        bytesToFile.write(path, key);
                     } catch (IOException e) {
                         throw new RuntimeException("Nie udało się zapisać do pliku");
                     }
@@ -133,6 +140,25 @@ public class EncryptionFileScene {
             OurButton loadKey = new OurButton("Wczytaj klucz", 10, 10);
             OurButton decrypt = new OurButton("Deszyfruj", 425, 400);
             loadKey.setPrefWidth(200);
+            loadKey.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    fileToBytes = new FileToBytes();
+                    ourKeyGenerator = new OurKeyGenerator();
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Open file with key");
+                    String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                    key = fileToBytes.load(path);
+                    keyLabel = new Label();
+                    keyLabel.setLayoutX(220);
+                    keyLabel.setLayoutY(10);
+                    keyLabel.setText(ourKeyGenerator.toString(key));
+                    keyLabel.setPrefWidth(500);
+                    keyLabel.setMaxHeight(100);
+                    keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
+                    pane.getChildren().add(keyLabel);
+                }
+            });
             decrypt.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {

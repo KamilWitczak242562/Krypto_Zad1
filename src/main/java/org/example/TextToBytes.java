@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TextToBytes {
 
-    public static byte[] textToBytes(String text) {
+    public byte[] textToBytes(String text) {
         byte[] bytes = text.getBytes();
         return bytes;
     }

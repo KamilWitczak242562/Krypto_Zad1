@@ -15,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.BitSet;
 
 public class EncryptionTextScene {
     private AnchorPane pane;
@@ -35,6 +36,10 @@ public class EncryptionTextScene {
     private BytesToFile bytesToFile;
 
     private byte[] bytes;
+
+    private OurKeyGenerator ourKeyGenerator;
+
+    private byte[] key;
 
     public EncryptionTextScene() {
         pane = new AnchorPane();
@@ -63,7 +68,9 @@ public class EncryptionTextScene {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select file to save");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                textToBytes = new TextToBytes();
                 bytesToFile = new BytesToFile();
+                bytes = textToBytes.textToBytes(areaAfterEncrypting.getText());
                 try {
                     bytesToFile.write(path, bytes);
                 } catch (IOException e) {
@@ -75,10 +82,12 @@ public class EncryptionTextScene {
         generate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                ourKeyGenerator = new OurKeyGenerator();
+                key = ourKeyGenerator.getRandomKey();
                 keyLabel = new Label();
                 keyLabel.setLayoutX(220);
                 keyLabel.setLayoutY(10);
-                keyLabel.setText("A8CA-81SA-sDA91-Sad1S");
+                keyLabel.setText(ourKeyGenerator.toString(key));
                 keyLabel.setPrefWidth(500);
                 keyLabel.setMaxHeight(100);
                 keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -93,7 +102,7 @@ public class EncryptionTextScene {
                 fileChooser.setTitle("Select file to save");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 try {
-                    bytesToFile.write(path, keyLabel.getText().getBytes());
+                    bytesToFile.write(path, key);
                 } catch (IOException e) {
                     throw new RuntimeException("Nie udało się zapisać do pliku");
                 }
