@@ -3,23 +3,31 @@ package org.example;
 import java.util.Arrays;
 
 public class AES {
-    private  int[][] sbox = {
-            {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76},
-            {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0},
-            {0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15},
-            {0x04, 0xC7, 0x23, 0xC3, 0x18, 0x96, 0x05, 0x9A, 0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27, 0xB2, 0x75},
-            {0x09, 0x83, 0x2C, 0x1A, 0x1B, 0x6E, 0x5A, 0xA0, 0x52, 0x3B, 0xD6, 0xB3, 0x29, 0xE3, 0x2F, 0x84},
-            {0x53, 0xD1, 0x00, 0xED, 0x20, 0xFC, 0xB1, 0x5B, 0x6A, 0xCB, 0xBE, 0x39, 0x4A, 0x4C, 0x58, 0xCF},
-            {0xD0, 0xEF, 0xAA, 0xFB, 0x43, 0x4D, 0x33, 0x85, 0x45, 0xF9, 0x02, 0x7F, 0x50, 0x3C, 0x9F, 0xA8},
-            {0x51, 0xA3, 0x40, 0x8F, 0x92, 0x9D, 0x38, 0xF5, 0xBC, 0xB6, 0xDA, 0x21, 0x10, 0xFF, 0xF3, 0xD2},
-            {0xCD, 0x0C, 0x13, 0xEC, 0x5F, 0x97, 0x44, 0x17, 0xC4, 0xA7, 0x7E, 0x3D, 0x64, 0x5D, 0x19, 0x73},
-            {0x60, 0x81, 0x4F, 0xDC, 0x22, 0x2A, 0x90, 0x88, 0x46, 0xEE, 0xB8, 0x14, 0xDE, 0x5E, 0x0B, 0xDB},
-            {0xE0, 0x32, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x5C, 0xC2, 0xD3, 0xAC, 0x62, 0x91, 0x95, 0xE4, 0x79},
-            {0xE7, 0xC8, 0x37, 0x6D, 0x8D, 0xD5, 0x4E, 0xA9, 0x6C, 0x56, 0xF4, 0xEA, 0x65, 0x7A, 0xAE, 0x08},
-            {0xBA, 0x78, 0x25, 0x2E, 0x1C, 0xA6, 0xB4, 0xC6, 0xE8, 0xDD, 0x74, 0x1F, 0x4B, 0xBD, 0x8B, 0x8A},
-            {0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E, 0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E},
-            {0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF},
-            {0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16} };
+    private int[] sbox = {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F,
+            0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82,
+            0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C,
+            0xA4, 0x72, 0xC0, 0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC,
+            0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15, 0x04, 0xC7, 0x23,
+            0xC3, 0x18, 0x96, 0x05, 0x9A, 0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27,
+            0xB2, 0x75, 0x09, 0x83, 0x2C, 0x1A, 0x1B, 0x6E, 0x5A, 0xA0, 0x52,
+            0x3B, 0xD6, 0xB3, 0x29, 0xE3, 0x2F, 0x84, 0x53, 0xD1, 0x00, 0xED,
+            0x20, 0xFC, 0xB1, 0x5B, 0x6A, 0xCB, 0xBE, 0x39, 0x4A, 0x4C, 0x58,
+            0xCF, 0xD0, 0xEF, 0xAA, 0xFB, 0x43, 0x4D, 0x33, 0x85, 0x45, 0xF9,
+            0x02, 0x7F, 0x50, 0x3C, 0x9F, 0xA8, 0x51, 0xA3, 0x40, 0x8F, 0x92,
+            0x9D, 0x38, 0xF5, 0xBC, 0xB6, 0xDA, 0x21, 0x10, 0xFF, 0xF3, 0xD2,
+            0xCD, 0x0C, 0x13, 0xEC, 0x5F, 0x97, 0x44, 0x17, 0xC4, 0xA7, 0x7E,
+            0x3D, 0x64, 0x5D, 0x19, 0x73, 0x60, 0x81, 0x4F, 0xDC, 0x22, 0x2A,
+            0x90, 0x88, 0x46, 0xEE, 0xB8, 0x14, 0xDE, 0x5E, 0x0B, 0xDB, 0xE0,
+            0x32, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x5C, 0xC2, 0xD3, 0xAC, 0x62,
+            0x91, 0x95, 0xE4, 0x79, 0xE7, 0xC8, 0x37, 0x6D, 0x8D, 0xD5, 0x4E,
+            0xA9, 0x6C, 0x56, 0xF4, 0xEA, 0x65, 0x7A, 0xAE, 0x08, 0xBA, 0x78,
+            0x25, 0x2E, 0x1C, 0xA6, 0xB4, 0xC6, 0xE8, 0xDD, 0x74, 0x1F, 0x4B,
+            0xBD, 0x8B, 0x8A, 0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E,
+            0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E, 0xE1, 0xF8, 0x98,
+            0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55,
+            0x28, 0xDF, 0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41,
+            0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16};
+
 
     private int[] inv_sbox = {0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5,
             0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB, 0x7C, 0xE3,
@@ -50,106 +58,47 @@ public class AES {
 
     private byte[] state;
 
-    private final int[] rcon = {
-            0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
-    }; // stałe rundy transformacji
-
 
     public AES(byte[] key, byte[] state) {
         this.key = key;
         this.state = state;
     }
 
-    //utworzenie kluczy rund
-    private int[][] keySchedule() {
-        int[][] w = new int[4][44];
-        int i, j;
-        int temp;
-        // pierwsze cztery kolumny klucza to same wartości bajtów klucza
-        for (i = 0; i < 4; i++) {
-            for (j = 0; j < 4; j++) {
-                w[i][j] = key[i * 4 + j] & 0xff;
-            }
+    private byte[][] generateRoundKeys() {
+        byte[][] temp = new byte[44][4];
+        int i = 0;
+        int j = 0;
+        while (i < 4) {
+            temp[i][0] = key[j];
+            temp[i][1] = key[j++];
+            temp[i][2] = key[j++];
+            temp[i][3] = key[j++];
+            i++;
+            j++;
         }
-        // każda kolejna kolumna klucza wypełniana jest na podstawie poprzedniej kolumny i poprzednich 3 słów
-        for (i = 4; i < 44; i++) {
-            temp = w[0][i - 1];
-            if (i % 4 == 0) {
-                // rotacja bajtów
-                temp = SubByte(rotWord(w[1][i - 1])) ^ rcon[i / 4 - 1];
-            }
-            for (j = 0; j < 4; j++) {
-                w[j][i] = w[j][i - 4] ^ temp;
-                temp = w[j][i];
-            }
-        }
-        return w;
+        return temp;
     }
 
-    private int SubByte(int b) {
-        return sbox[b / 16][b % 16];
-    }
-
-    private int rotWord(int w) {
-        return Integer.rotateLeft(w, 8);
-    }
-
-    private int[][] stateToMatrix(byte[] state) {
-        int[][] matrix = new int[4][4];
+    private byte[][] addRoundKey(byte[][] state, byte[][] roundKey) {
+        byte[][] result = new byte[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                matrix[j][i] = state[i * 4 + j] & 0xff;
-            }
-        }
-        return matrix;
-    }
-
-    private byte[] matrixToState(int[][] matrix) {
-        byte[] state = new byte[16];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                state[i * 4 + j] = (byte) matrix[j][i];
-            }
-        }
-        return state;
-    }
-
-    //dopełnienie zerami
-    public byte[] padWithZeros(byte[] state) {
-        int paddingSize = 16 - (state.length % 16);
-        byte[] paddedInput = Arrays.copyOf(state, state.length + paddingSize + 1);
-        for (int i = state.length; i < paddedInput.length - 1; i++) {
-            paddedInput[i] = 0;
-        }
-        paddedInput[paddedInput.length - 1] = (byte) paddingSize;
-        return paddedInput;
-    }
-
-    //pierwszy krok, state xor klucz
-    private int[][] addRoundKey(int[][] state, int[][] roundKey) {
-        int[][] result = new int[4][4];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                result[i][j] = state[i][j] ^ roundKey[i][j];
+                result[i][j] = (byte) (state[i][j] ^ roundKey[i][j]);
             }
         }
         return result;
     }
 
-    //podmienienie wartości macieży z S-boxem
-    private int[][] subBytes(int[][] state) {
-        int[][] result = new int[4][4];
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                result[i][j] = SubByte(state[i][j]);
-            }
-        }
-        return result;
+    private byte[][] subBytes(byte[][] state) {
+        byte[][] temp = new byte[state.length][state[0].length];
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                temp[i][j] = (byte) (sbox[(state[i][j] & 0xff)]);
+        return temp;
     }
 
-    //operacje rotate left
-    private int[][] shiftRows(int[][] state) {
-        int[][] result = new int[4][4];
+    private byte[][] shiftRows(byte[][] state) {
+        byte[][] result = new byte[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 result[i][j] = state[i][(j + i) % 4];
@@ -158,14 +107,14 @@ public class AES {
         return result;
     }
 
-    private int[][] mixColumns(int[][] state) {
-        int[][] result = new int[4][4];
-        int[] col = new int[4];
+    private byte[][] mixColumns(byte[][] state) {
+        byte[][] result = new byte[4][4];
+        byte[] col = new byte[4];
         for (int j = 0; j < 4; j++) {
             for (int i = 0; i < 4; i++) {
                 col[i] = state[i][j];
             }
-            int[] mixedCol = mixColumn(col);
+            byte[] mixedCol = mixColumn(col);
             for (int i = 0; i < 4; i++) {
                 result[i][j] = mixedCol[i];
             }
@@ -173,60 +122,78 @@ public class AES {
         return result;
     }
 
-    private int[] mixColumn(int[] col) {
+    private byte[] mixColumn(byte[] col) {
         int[] result = new int[4];
-        result[0] = mul(0x02, col[0]) ^ mul(0x03, col[1]) ^ mul(0x01, col[2]) ^ mul(0x01, col[3]);
-        result[1] = mul(0x01, col[0]) ^ mul(0x02, col[1]) ^ mul(0x03, col[2]) ^ mul(0x01, col[3]);
-        result[2] = mul(0x01, col[0]) ^ mul(0x01, col[1]) ^ mul(0x02, col[2]) ^ mul(0x03, col[3]);
-        result[3] = mul(0x03, col[0]) ^ mul(0x01, col[1]) ^ mul(0x01, col[2]) ^ mul(0x02, col[3]);
-        return result;
+        byte one = (byte) 0x01;
+        byte two = (byte) 0x02;
+        byte three = (byte) 0x03;
+        result[0] = mul(two, col[0]) ^ mul(three, col[1]) ^ mul(one, col[2]) ^ mul(one, col[3]);
+        result[1] = mul(one, col[0]) ^ mul(two, col[1]) ^ mul(three, col[2]) ^ mul(one, col[3]);
+        result[2] = mul(one, col[0]) ^ mul(one, col[1]) ^ mul(two, col[2]) ^ mul(three, col[3]);
+        result[3] = mul(three, col[0]) ^ mul(one, col[1]) ^ mul(one, col[2]) ^ mul(two, col[3]);
+        for (int i = 0; i < 4; i++) {
+            col[i] = (byte) (result[i]);
+        }
+        return col;
     }
 
-    private int mul(int a, int b) {
-        if (a == 0 || b == 0) {
-            return 0;
+    //trzeba się pochylić
+    private byte mul(byte a, byte b) {
+        byte aa = a, bb = b, r = 0, t;
+        while (aa != 0) {
+            if ((aa & 1) != 0)
+                r = (byte) (r ^ bb);
+            t = (byte) (bb & 0x20);
+            bb = (byte) (bb << 1);
+            if (t != 0)
+                bb = (byte) (bb ^ 0x1b);
+            aa = (byte) ((aa & 0xff) >> 1);
         }
-        int result = 0;
-        while (b > 0) {
-            if ((b & 1) == 1) {
-                result ^= a;
-            }
-            a = xtime(a);
-            b >>= 1;
-        }
-        return result;
+        return r;
     }
 
-    //przesunięcie bajtu o jeden w lewo
-    private int xtime(int a) {
-        return ((a << 1) ^ (((a >> 7) & 1) * 0x1b)) & 0xff;
-    }
-
-    private byte[] encryptBlock(byte[] input, int[][] keySchedule) {
-        int[][] state = stateToMatrix(input);
-        state = addRoundKey(state, Arrays.copyOfRange(keySchedule, 0, 4));
-        for (int i = 1; i <= 10; i++) {
-            state = subBytes(state);
-            state = shiftRows(state);
-            if (i != 10) {
-                state = mixColumns(state);
-            }
-            state = addRoundKey(state, Arrays.copyOfRange(keySchedule, i * 4, i * 4 + 4));
+    public byte[][] encryptOne(byte[][] matrix, byte[][] key) {
+        matrix = addRoundKey(matrix, key);
+        for (int round = 1; round < 10; round++) {
+            matrix = subBytes(matrix);
+            matrix = shiftRows(matrix);
+            matrix = mixColumns(matrix);
+            matrix = addRoundKey(matrix, key);
         }
-        return matrixToState(state);
+        matrix = subBytes(matrix);
+        matrix = shiftRows(matrix);
+        matrix = addRoundKey(matrix, key);
+        return matrix;
     }
 
     public byte[] encrypt() {
-        int[][] keySchedule = keySchedule();
-        byte[] paddedInput = padWithZeros(this.state);
-        byte[] output = new byte[paddedInput.length];
-        for (int i = 0;i < paddedInput.length; i += 16) {
-            byte[] block = Arrays.copyOfRange(paddedInput, i, i + 16);
-            byte[] encryptedBlock = encryptBlock(block, keySchedule);
-            System.arraycopy(encryptedBlock, 0, output, i, 16);
-        }
-        return output;
+        byte[][] key = generateRoundKeys();
+        byte[] result = new byte[state.length + (state.length % 16)];
+        int y = 0;
+        int x = 0;
+        do {
+            byte[][] block = new byte[4][4];
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (y < state.length) {
+                        block[i][j] = state[y];
+                        y++;
+                    } else {
+                        block[i][j] = 0x00;
+                    }
+                }
+            }
+            block = encryptOne(block, key);
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    result[x] = block[i][j];
+                    x++;
+                }
+            }
+        } while (y != state.length);
+        return result;
     }
+
 }
 
 
