@@ -1,16 +1,9 @@
 package org.example;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.BitSet;
 import java.util.Random;
 
-public class OurKeyGenerator {
+public class Utils {
 
     private static int KEY_SIZE = 128;
 
@@ -26,7 +19,10 @@ public class OurKeyGenerator {
     }
 
     public String toString(byte[] bytes) {
-        String s = new String(bytes, StandardCharsets.UTF_8);
-        return s;
+        StringBuilder result = new StringBuilder();
+        for (byte b : bytes) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 }

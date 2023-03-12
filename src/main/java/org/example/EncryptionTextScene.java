@@ -15,7 +15,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.BitSet;
 
 public class EncryptionTextScene {
     private AnchorPane pane;
@@ -37,9 +36,13 @@ public class EncryptionTextScene {
 
     private byte[] bytes;
 
-    private OurKeyGenerator ourKeyGenerator;
+    private Utils utils;
 
     private byte[] key;
+
+    private AES aes;
+
+    private byte[] encryptedBytes;
 
     public EncryptionTextScene() {
         pane = new AnchorPane();
@@ -82,12 +85,12 @@ public class EncryptionTextScene {
         generate.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                ourKeyGenerator = new OurKeyGenerator();
-                key = ourKeyGenerator.getRandomKey();
+                utils = new Utils();
+                key = utils.getRandomKey();
                 keyLabel = new Label();
                 keyLabel.setLayoutX(220);
                 keyLabel.setLayoutY(10);
-                keyLabel.setText(ourKeyGenerator.toString(key));
+                keyLabel.setText(utils.toString(key));
                 keyLabel.setPrefWidth(500);
                 keyLabel.setMaxHeight(100);
                 keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -114,7 +117,10 @@ public class EncryptionTextScene {
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
                 textToBytes = new TextToBytes();
-                areaAfterEncrypting.setText(textToBytes.bytesToText(textToBytes.textToBytes(areaToWrite.getText())));
+                bytes = textToBytes.textToBytes(areaToWrite.getText());
+                aes = new AES(key, bytes);
+                encryptedBytes = aes.encrypt();
+                areaAfterEncrypting.setText(textToBytes.bytesToText(encryptedBytes));
                 areaAfterEncrypting.setLayoutX(510);
                 areaAfterEncrypting.setLayoutY(120);
                 pane.getChildren().add(areaAfterEncrypting);

@@ -6,16 +6,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.BitSet;
 
 public class EncryptionFileScene {
 
@@ -34,9 +28,15 @@ public class EncryptionFileScene {
 
     private Label keyLabel;
 
-    private OurKeyGenerator ourKeyGenerator;
+    private Utils utils;
 
     private byte[] key;
+
+    private AES aes;
+
+    private byte[] encryptedBytes;
+
+    private TextToBytes textToBytes;
 
     public EncryptionFileScene(Boolean whatToDo) {
         pane = new AnchorPane();
@@ -61,12 +61,13 @@ public class EncryptionFileScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 fileToBytes = new FileToBytes();
+                utils = new Utils();
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Open file to encrypt");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytes = fileToBytes.load(path);
                 areaToEncrypt = new TextArea();
-                areaToEncrypt.setText(bytes.toString());
+                areaToEncrypt.setText(utils.toString(bytes));
                 areaToEncrypt.setLayoutX(10);
                 areaToEncrypt.setLayoutY(120);
                 pane.getChildren().add(areaToEncrypt);
@@ -81,7 +82,7 @@ public class EncryptionFileScene {
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytesToFile = new BytesToFile();
                 try {
-                    bytesToFile.write(path, bytes);
+                    bytesToFile.write(path, encryptedBytes);
                 } catch (IOException e) {
                     throw new RuntimeException("Nie udało się zapisać do pliku");
                 }
@@ -98,12 +99,12 @@ public class EncryptionFileScene {
             generate.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    ourKeyGenerator = new OurKeyGenerator();
-                    key = ourKeyGenerator.getRandomKey();
+                    utils = new Utils();
+                    key = utils.getRandomKey();
                     keyLabel = new Label();
                     keyLabel.setLayoutX(220);
                     keyLabel.setLayoutY(10);
-                    keyLabel.setText(ourKeyGenerator.toString(key));
+                    keyLabel.setText(utils.toString(key));
                     keyLabel.setPrefWidth(500);
                     keyLabel.setMaxHeight(100);
                     keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -127,7 +128,10 @@ public class EncryptionFileScene {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     areaAfterEncrypting = new TextArea();
-                    areaAfterEncrypting.setText(areaToEncrypt.getText());
+                    aes = new AES(key, bytes);
+                    encryptedBytes = aes.encrypt();
+                    textToBytes = new TextToBytes();
+                    areaAfterEncrypting.setText(textToBytes.bytesToText(encryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);
@@ -144,7 +148,7 @@ public class EncryptionFileScene {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     fileToBytes = new FileToBytes();
-                    ourKeyGenerator = new OurKeyGenerator();
+                    utils = new Utils();
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Open file with key");
                     String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
@@ -152,7 +156,7 @@ public class EncryptionFileScene {
                     keyLabel = new Label();
                     keyLabel.setLayoutX(220);
                     keyLabel.setLayoutY(10);
-                    keyLabel.setText(ourKeyGenerator.toString(key));
+                    keyLabel.setText(utils.toString(key));
                     keyLabel.setPrefWidth(500);
                     keyLabel.setMaxHeight(100);
                     keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
