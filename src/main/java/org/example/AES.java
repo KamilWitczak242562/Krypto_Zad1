@@ -1,6 +1,10 @@
 package org.example;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class AES {
     private int[] sbox = {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F,
@@ -65,18 +69,18 @@ public class AES {
     }
 
     private byte[][] generateRoundKeys() {
-        byte[][] temp = new byte[44][4];
+        byte[][] keys = new byte[44][4];
         int i = 0;
         int j = 0;
         while (i < 4) {
-            temp[i][0] = key[j];
-            temp[i][1] = key[j++];
-            temp[i][2] = key[j++];
-            temp[i][3] = key[j++];
+            keys[i][0] = key[j];
+            keys[i][1] = key[j++];
+            keys[i][2] = key[j++];
+            keys[i][3] = key[j++];
             i++;
             j++;
         }
-        return temp;
+        return keys;
     }
 
     private byte[][] addRoundKey(byte[][] state, byte[][] roundKey) {
@@ -168,7 +172,7 @@ public class AES {
 
     public byte[] encrypt() {
         byte[][] key = generateRoundKeys();
-        byte[] result = new byte[state.length + (state.length % 16)];
+        List<Byte> result = new ArrayList<>();
         int y = 0;
         int x = 0;
         do {
@@ -180,18 +184,25 @@ public class AES {
                         y++;
                     } else {
                         block[i][j] = 0x00;
+                        x++;
+                        if (i == 3 && j == 3){
+                            block[i][j] = (byte) x;
+                        }
                     }
                 }
             }
             block = encryptOne(block, key);
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
-                    result[x] = block[i][j];
-                    x++;
+                    result.add(block[i][j]);
                 }
             }
         } while (y != state.length);
-        return result;
+        byte[] bytes = new byte[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            bytes[i] = result.get(i);
+        }
+        return bytes;
     }
 
 }
