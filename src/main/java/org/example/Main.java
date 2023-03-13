@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     public static void main(String[] args) throws NoSuchAlgorithmException, InterruptedException {
-        launch();
+       // launch();
         Utils utils = new Utils();
         byte[] key = utils.getRandomKey();
         TextToBytes text = new TextToBytes();

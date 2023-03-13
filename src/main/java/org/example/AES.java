@@ -83,6 +83,7 @@ public class AES {
         return keys;
     }
 
+    //wykonuje operację XOR dla każdego bajtu wejściowego bloku z odpowiadającym mu bajtem w kluczu rundy.
     private byte[][] addRoundKey(byte[][] state, byte[][] roundKey) {
         byte[][] result = new byte[4][4];
         for (int i = 0; i < 4; i++) {
@@ -93,6 +94,7 @@ public class AES {
         return result;
     }
 
+    //podstawienia każdego bajtu z wejściowego bloku 16 bajtów zgodnie ze statyczną tablicą sbox.
     private byte[][] subBytes(byte[][] state) {
         byte[][] temp = new byte[state.length][state[0].length];
         for (int i = 0; i < 4; i++)
@@ -101,6 +103,7 @@ public class AES {
         return temp;
     }
 
+    //przesuwa każdy wiersz wejściowego bloku o określoną liczbę bajtów, zgodnie ze specyficzną dla każdego wiersza wartością.
     private byte[][] shiftRows(byte[][] state) {
         byte[][] result = new byte[4][4];
         for (int i = 0; i < 4; i++) {
@@ -111,6 +114,7 @@ public class AES {
         return result;
     }
 
+    //mieszanie kolumny jednego bloku stanu, który jest reprezentowany przez 4 bajty.
     private byte[][] mixColumns(byte[][] state) {
         byte[][] result = new byte[4][4];
         byte[] col = new byte[4];
@@ -126,6 +130,7 @@ public class AES {
         return result;
     }
 
+    //implementuje krok MixColumns w algorytmie AES, który polega na wykonaniu określonych operacji matematycznych na każdej kolumnie macierzy stanu
     private byte[] mixColumn(byte[] col) {
         int[] result = new int[4];
         byte one = (byte) 0x01;
@@ -141,20 +146,33 @@ public class AES {
         return col;
     }
 
+
+    //mnożenie dwóch bajtów (a i b) w ciele Galois o rozmiarze 2^8
     //trzeba się pochylić
-    private byte mul(byte a, byte b) {
-        byte aa = a, bb = b, r = 0, t;
-        while (aa != 0) {
-            if ((aa & 1) != 0)
-                r = (byte) (r ^ bb);
-            t = (byte) (bb & 0x20);
-            bb = (byte) (bb << 1);
-            if (t != 0)
-                bb = (byte) (bb ^ 0x1b);
-            aa = (byte) ((aa & 0xff) >> 1);
+    private byte mul(byte multiplier, byte multiplicand) {
+        byte result = 0;
+        byte temp;
+        while (multiplier != 0) {
+            if ((multiplier & 1) != 0)
+                result = (byte) (result ^ multiplicand);
+            temp = (byte) (multiplicand & 0x20);
+            multiplicand = (byte) (multiplicand << 1);
+            if (temp != 0)
+                multiplicand = (byte) (multiplicand ^ 0x1b);
+            multiplier = (byte) ((multiplier & 0xff) >> 1);
         }
-        return r;
+        return result;
     }
+
+    /*
+    1. Inicjalizuje zmienne multiplier, multiplicand, result i temp.
+    2. Wykonuje pętlę while, która działa dopóki multiplier nie będzie równa 0.
+    3. Wewnątrz pętli sprawdza, czy najmniej znaczący bit zmiennej multiplier jest równy 1. Jeśli tak, to wykonuje operację XOR między result i multiplicand.
+    4. Przesuwa bity zmiennej multiplicand o jedno miejsce w lewo i zapisuje wynik w tej samej zmiennej.
+    5. Sprawdza, czy 6-ty bit zmiennej bb jest równy 1. Jeśli tak, to wykonuje operację XOR między multiplicand i 0x1b.
+    6. Przesuwa bity zmiennej multiplier o jedno miejsce w prawo i zapisuje wynik w tej samej zmiennej.
+    7. Zwraca wartość zmiennej result.
+  */
 
     public byte[][] encryptOne(byte[][] matrix, byte[][] key) {
         matrix = addRoundKey(matrix, key);
@@ -170,6 +188,7 @@ public class AES {
         return matrix;
     }
 
+    //szyfruje podany blok 16 bajtów z użyciem klucza szyfrującego. Wykorzystuje do tego celu wszystkie powyższe metody oraz dodatkowe operacje.
     public byte[] encrypt() {
         byte[][] key = generateRoundKeys();
         List<Byte> result = new ArrayList<>();
