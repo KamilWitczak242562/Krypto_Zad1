@@ -68,7 +68,7 @@ public class AES {
         this.state = state;
     }
 
-    private byte[][] generateRoundKeys() {
+    public byte[][] generateRoundKeys() {
         byte[][] keys = new byte[44][4];
         int i = 0;
         int j = 0;
@@ -84,11 +84,11 @@ public class AES {
     }
 
     //wykonuje operację XOR dla każdego bajtu wejściowego bloku z odpowiadającym mu bajtem w kluczu rundy.
-    private byte[][] addRoundKey(byte[][] state, byte[][] roundKey) {
+    private byte[][] addRoundKey(byte[][] state, byte[][] roundKey, int round) {
         byte[][] result = new byte[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                result[i][j] = (byte) (state[i][j] ^ roundKey[i][j]);
+                result[i][j] = (byte) (state[i][j] ^ roundKey[round * 4 + i][j]);
             }
         }
         return result;
@@ -172,23 +172,24 @@ public class AES {
     5. Sprawdza, czy 6-ty bit zmiennej bb jest równy 1. Jeśli tak, to wykonuje operację XOR między multiplicand i 0x1b.
     6. Przesuwa bity zmiennej multiplier o jedno miejsce w prawo i zapisuje wynik w tej samej zmiennej.
     7. Zwraca wartość zmiennej result.
-  */
+   */
+
 
     public byte[][] encryptOne(byte[][] matrix, byte[][] key) {
-        matrix = addRoundKey(matrix, key);
+        matrix = addRoundKey(matrix, key, 0);
         for (int round = 1; round < 10; round++) {
             matrix = subBytes(matrix);
             matrix = shiftRows(matrix);
             matrix = mixColumns(matrix);
-            matrix = addRoundKey(matrix, key);
+            matrix = addRoundKey(matrix, key, round);
         }
         matrix = subBytes(matrix);
         matrix = shiftRows(matrix);
-        matrix = addRoundKey(matrix, key);
+        matrix = addRoundKey(matrix, key, 10);
         return matrix;
     }
 
-    //szyfruje podany blok 16 bajtów z użyciem klucza szyfrującego. Wykorzystuje do tego celu wszystkie powyższe metody oraz dodatkowe operacje.
+    //szyfruje podany blok gpg 16 bajtów z użyciem klucza szyfrującego. Wykorzystuje do tego celu wszystkie powyższe metody oraz dodatkowe operacje.
     public byte[] encrypt() {
         byte[][] key = generateRoundKeys();
         List<Byte> result = new ArrayList<>();
