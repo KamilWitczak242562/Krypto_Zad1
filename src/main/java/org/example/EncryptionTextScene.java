@@ -43,6 +43,7 @@ public class EncryptionTextScene {
     private AES aes;
 
     private byte[] encryptedBytes;
+    private byte[] decryptedBytes;
 
     public EncryptionTextScene() {
         pane = new AnchorPane();
@@ -127,6 +128,14 @@ public class EncryptionTextScene {
             }
         });
         OurButton decrypt = new OurButton("Deszyfruj", 425, 450);
+        decrypt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                aes = new AES(key, bytes);
+                decryptedBytes = aes.decrypt();
+                areaToWrite.setText(utils.toString(decryptedBytes));
+            }
+        });
         generate.setPrefWidth(200);
         saveKey.setPrefWidth(200);
         saveFile.setPrefWidth(200);

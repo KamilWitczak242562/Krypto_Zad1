@@ -38,6 +38,8 @@ public class EncryptionFileScene {
 
     private TextToBytes textToBytes;
 
+    private byte[] decryptedBytes;
+
     public EncryptionFileScene(Boolean whatToDo) {
         pane = new AnchorPane();
         stage = new Stage();
@@ -62,40 +64,41 @@ public class EncryptionFileScene {
             public void handle(ActionEvent actionEvent) {
                 fileToBytes = new FileToBytes();
                 utils = new Utils();
+                textToBytes = new TextToBytes();
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Open file to encrypt");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytes = fileToBytes.load(path);
                 areaToEncrypt = new TextArea();
-                areaToEncrypt.setText(utils.toString(bytes));
+                areaToEncrypt.setText(textToBytes.bytesToText(bytes));
                 areaToEncrypt.setLayoutX(10);
                 areaToEncrypt.setLayoutY(120);
                 pane.getChildren().add(areaToEncrypt);
             }
         });
-        OurButton saveFile = new OurButton("Zapisz plik", 790, 60);
-        saveFile.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select file to save");
-                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
-                bytesToFile = new BytesToFile();
-                try {
-                    bytesToFile.write(path, encryptedBytes);
-                } catch (IOException e) {
-                    throw new RuntimeException("Nie udało się zapisać do pliku");
-                }
-            }
-        });
         loadFile.setPrefWidth(200);
-        saveFile.setPrefWidth(200);
         if (whatToDo) {
             OurButton generate = new OurButton("Generuj klucz", 10, 10);
             OurButton saveKey = new OurButton("Zapisz klucz", 790, 10);
             OurButton encrypt = new OurButton("Szyfruj", 425, 400);
             generate.setPrefWidth(200);
             saveKey.setPrefWidth(200);
+            OurButton saveFile = new OurButton("Zapisz plik", 790, 60);
+            saveFile.setPrefWidth(200);
+            saveFile.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Select file to save");
+                    String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                    bytesToFile = new BytesToFile();
+                    try {
+                        bytesToFile.write(path, encryptedBytes);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Nie udało się zapisać do pliku");
+                    }
+                }
+            });
             generate.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
@@ -140,9 +143,26 @@ public class EncryptionFileScene {
             pane.getChildren().add(encrypt);
             pane.getChildren().add(generate);
             pane.getChildren().add(saveKey);
+            pane.getChildren().add(saveFile);
         } else {
             OurButton loadKey = new OurButton("Wczytaj klucz", 10, 10);
             OurButton decrypt = new OurButton("Deszyfruj", 425, 400);
+            OurButton saveFile = new OurButton("Zapisz plik", 790, 60);
+            saveFile.setPrefWidth(200);
+            saveFile.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Select file to save");
+                    String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
+                    bytesToFile = new BytesToFile();
+                    try {
+                        bytesToFile.write(path, decryptedBytes);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Nie udało się zapisać do pliku");
+                    }
+                }
+            });
             loadKey.setPrefWidth(200);
             loadKey.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -166,8 +186,10 @@ public class EncryptionFileScene {
             decrypt.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
+                    aes = new AES(key, bytes);
+                    decryptedBytes = aes.decrypt();
                     areaAfterEncrypting = new TextArea();
-                    areaAfterEncrypting.setText(areaToEncrypt.getText());
+                    areaAfterEncrypting.setText(textToBytes.bytesToText(decryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);
@@ -175,9 +197,9 @@ public class EncryptionFileScene {
             });
             pane.getChildren().add(decrypt);
             pane.getChildren().add(loadKey);
+            pane.getChildren().add(saveFile);
         }
         pane.getChildren().add(back);
         pane.getChildren().add(loadFile);
-        pane.getChildren().add(saveFile);
     }
 }

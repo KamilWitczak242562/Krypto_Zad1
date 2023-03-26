@@ -1,9 +1,6 @@
 package org.example;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AES {
@@ -96,10 +93,18 @@ public class AES {
 
     //podstawienia każdego bajtu z wejściowego bloku 16 bajtów zgodnie ze statyczną tablicą sbox.
     private byte[][] subBytes(byte[][] state) {
-        byte[][] temp = new byte[state.length][state[0].length];
+        byte[][] temp = new byte[4][4];
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 temp[i][j] = (byte) (sbox[(state[i][j] & 0xff)]);
+        return temp;
+    }
+
+    private byte[][] de_subBytes(byte[][] state) {
+        byte[][] temp = new byte[4][4];
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                temp[i][j] = (byte) (inv_sbox[(state[i][j] & 0xff)]);
         return temp;
     }
 
@@ -109,6 +114,16 @@ public class AES {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 result[i][j] = state[i][(j + i) % 4];
+            }
+        }
+        return result;
+    }
+
+    private byte[][] de_shiftRows(byte[][] state) {
+        byte[][] result = new byte[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result[i][(j + 1) % 4] = state[i][j];
             }
         }
         return result;
@@ -140,6 +155,37 @@ public class AES {
         result[1] = mul(one, col[0]) ^ mul(two, col[1]) ^ mul(three, col[2]) ^ mul(one, col[3]);
         result[2] = mul(one, col[0]) ^ mul(one, col[1]) ^ mul(two, col[2]) ^ mul(three, col[3]);
         result[3] = mul(three, col[0]) ^ mul(one, col[1]) ^ mul(one, col[2]) ^ mul(two, col[3]);
+        for (int i = 0; i < 4; i++) {
+            col[i] = (byte) (result[i]);
+        }
+        return col;
+    }
+
+    private byte[][] de_MixColumns(byte[][] state) {
+        byte[][] result = new byte[4][4];
+        byte[] col = new byte[4];
+        for (int j = 0; j < 4; j++) {
+            for (int i = 0; i < 4; i++) {
+                col[i] = state[i][j];
+            }
+            byte[] mixedCol = de_MixColumn(col);
+            for (int i = 0; i < 4; i++) {
+                result[i][j] = mixedCol[i];
+            }
+        }
+        return result;
+    }
+
+    private byte[] de_MixColumn(byte[] col) {
+        int[] result = new int[4];
+        byte nine = (byte) 0x09;
+        byte eleven = (byte) 0x0B;
+        byte thirteen = (byte) 0x0D;
+        byte fourteen = (byte) 0x0E;
+        result[0] = mul(fourteen, col[0]) ^ mul(eleven, col[1]) ^ mul(thirteen, col[2]) ^ mul(nine, col[3]);
+        result[1] = mul(nine, col[0]) ^ mul(fourteen, col[1]) ^ mul(eleven, col[2]) ^ mul(thirteen, col[3]);
+        result[2] = mul(thirteen, col[0]) ^ mul(nine, col[1]) ^ mul(fourteen, col[2]) ^ mul(eleven, col[3]);
+        result[3] = mul(eleven, col[0]) ^ mul(thirteen, col[1]) ^ mul(nine, col[2]) ^ mul(fourteen, col[3]);
         for (int i = 0; i < 4; i++) {
             col[i] = (byte) (result[i]);
         }
@@ -189,7 +235,21 @@ public class AES {
         return matrix;
     }
 
-    //szyfruje podany blok gpg 16 bajtów z użyciem klucza szyfrującego. Wykorzystuje do tego celu wszystkie powyższe metody oraz dodatkowe operacje.
+    public byte[][] decryptOne(byte[][] matrix, byte[][] key) {
+        matrix = addRoundKey(matrix, key, 10);
+        for (int round = 9; round > 0; round--) {
+            matrix = de_subBytes(matrix);
+            matrix = de_shiftRows(matrix);
+            matrix = addRoundKey(matrix, key, round);
+            matrix = de_MixColumns(matrix);
+        }
+        matrix = de_subBytes(matrix);
+        matrix = de_shiftRows(matrix);
+        matrix = addRoundKey(matrix, key, 0);
+        return matrix;
+    }
+
+    //szyfruje podany blok 16 bajtów z użyciem klucza szyfrującego. Wykorzystuje do tego celu wszystkie powyższe metody oraz dodatkowe operacje.
     public byte[] encrypt() {
         byte[][] key = generateRoundKeys();
         List<Byte> result = new ArrayList<>();
@@ -205,7 +265,7 @@ public class AES {
                     } else {
                         block[i][j] = 0x00;
                         x++;
-                        if (i == 3 && j == 3){
+                        if (i == 3 && j == 3) {
                             block[i][j] = (byte) x;
                         }
                     }
@@ -218,6 +278,41 @@ public class AES {
                 }
             }
         } while (y != state.length);
+        byte[] bytes = new byte[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            bytes[i] = result.get(i);
+        }
+        return bytes;
+    }
+
+    public byte[] decrypt() {
+        byte[][] key = generateRoundKeys();
+        List<Byte> result = new ArrayList<>();
+        int y = 0;
+        do {
+            byte[][] block = new byte[4][4];
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (y < state.length) {
+                        block[i][j] = state[y];
+                        y++;
+                    }
+                }
+            }
+            block = decryptOne(block, key);
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    result.add(block[i][j]);
+                }
+            }
+        } while (y != state.length);
+        int zeroes = (int) result.get(result.size() - 1) + 1;
+        int lastPlace =  (int) result.get(result.size() - 2);
+        if (lastPlace == 0 || zeroes == 0) {
+            for (int i = 1; i < zeroes + 1; i++) {
+                result.remove(result.size() - i);
+            }
+        }
         byte[] bytes = new byte[result.size()];
         for (int i = 0; i < result.size(); i++) {
             bytes[i] = result.get(i);
