@@ -24,8 +24,6 @@ public class EncryptionTextScene {
 
     private String textToEncrypt;
 
-    private TextToBytes textToBytes;
-
     private TextArea areaToWrite;
 
     private TextArea areaAfterEncrypting;
@@ -72,9 +70,8 @@ public class EncryptionTextScene {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Select file to save");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
-                textToBytes = new TextToBytes();
                 bytesToFile = new BytesToFile();
-                bytes = textToBytes.textToBytes(areaAfterEncrypting.getText());
+                bytes = utils.textToBytes(areaAfterEncrypting.getText());
                 try {
                     bytesToFile.write(path, bytes);
                 } catch (IOException e) {
@@ -117,11 +114,10 @@ public class EncryptionTextScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
-                textToBytes = new TextToBytes();
-                bytes = textToBytes.textToBytes(areaToWrite.getText());
+                bytes = utils.textToBytes(areaToWrite.getText());
                 aes = new AES(key, bytes);
                 encryptedBytes = aes.encrypt();
-                areaAfterEncrypting.setText(textToBytes.bytesToText(encryptedBytes));
+                areaAfterEncrypting.setText(utils.toString(encryptedBytes));
                 areaAfterEncrypting.setLayoutX(510);
                 areaAfterEncrypting.setLayoutY(120);
                 pane.getChildren().add(areaAfterEncrypting);

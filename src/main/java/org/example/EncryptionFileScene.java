@@ -36,7 +36,6 @@ public class EncryptionFileScene {
 
     private byte[] encryptedBytes;
 
-    private TextToBytes textToBytes;
 
     private byte[] decryptedBytes;
 
@@ -64,13 +63,12 @@ public class EncryptionFileScene {
             public void handle(ActionEvent actionEvent) {
                 fileToBytes = new FileToBytes();
                 utils = new Utils();
-                textToBytes = new TextToBytes();
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Open file to encrypt");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytes = fileToBytes.load(path);
                 areaToEncrypt = new TextArea();
-                areaToEncrypt.setText(textToBytes.bytesToText(bytes));
+                areaToEncrypt.setText(utils.toString(bytes));
                 areaToEncrypt.setLayoutX(10);
                 areaToEncrypt.setLayoutY(120);
                 pane.getChildren().add(areaToEncrypt);
@@ -133,8 +131,7 @@ public class EncryptionFileScene {
                     areaAfterEncrypting = new TextArea();
                     aes = new AES(key, bytes);
                     encryptedBytes = aes.encrypt();
-                    textToBytes = new TextToBytes();
-                    areaAfterEncrypting.setText(textToBytes.bytesToText(encryptedBytes));
+                    areaAfterEncrypting.setText(utils.toString(encryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);
@@ -189,7 +186,7 @@ public class EncryptionFileScene {
                     aes = new AES(key, bytes);
                     decryptedBytes = aes.decrypt();
                     areaAfterEncrypting = new TextArea();
-                    areaAfterEncrypting.setText(textToBytes.bytesToText(decryptedBytes));
+                    areaAfterEncrypting.setText(utils.toString(decryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);
