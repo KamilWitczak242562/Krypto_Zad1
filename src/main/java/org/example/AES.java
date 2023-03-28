@@ -306,13 +306,8 @@ public class AES {
                 }
             }
         } while (y != state.length);
-        int zeroes = (int) result.get(result.size() - 1) + 1;
-        int lastPlace =  (int) result.get(result.size() - 2);
-        if (lastPlace == 0 || zeroes == 0) {
-            for (int i = 1; i < zeroes + 1; i++) {
-                result.remove(result.size() - i);
-            }
-        }
+        int zeroes = (int) result.get(result.size() - 1);
+
         byte[] bytes = new byte[result.size()];
         for (int i = 0; i < result.size(); i++) {
             bytes[i] = result.get(i);

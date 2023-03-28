@@ -13,8 +13,8 @@ public class Utils {
         BitSet key = new BitSet(KEY_SIZE);
         byte[] bytes;
         Random random = new Random();
-        for (int i = 0; i < KEY_SIZE; i++) {
-            key.set(i, random.nextBoolean());
+        for (int i = 0; i < 128; i++) {
+            key.set(i, true);
         }
         bytes = key.toByteArray();
         return bytes;

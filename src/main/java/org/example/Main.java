@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.BitSet;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
@@ -14,13 +15,17 @@ public class Main extends Application {
         //launch();
         Utils utils = new Utils();
         byte[] key = utils.getRandomKey();
-        AES aes = new AES(key, utils.hexToByte(utils.convertStringToHex("test")));
+        byte[] block = new byte[17];
+        for (int i = 0; i < 17; i++){
+                block[i] = 0x02;
+        }
+        AES aes = new AES(key, block);
         byte[] en = aes.encrypt();
         AES de_aes = new AES(key, en);
         byte[] de = de_aes.decrypt();
-        System.out.println("Tekst do szyfrowania: " + utils.convertHexToString(utils.convertStringToHex("test")));
+        System.out.println("Tekst do szyfrowania: " + utils.byteToHex(block));
         System.out.println("Tekst zaszyfrowany: " + utils.byteToHex(en));
-        System.out.println("Tekst odszyfrowany?: " + utils.convertHexToString(utils.byteToHex(de)));
+        System.out.println("Tekst odszyfrowany?: " + utils.byteToHex(de));
         System.out.printf("Klucz: " + utils.toString(key));
         System.out.printf("\n");
         byte[][] rs = aes.generateRoundKeys();
