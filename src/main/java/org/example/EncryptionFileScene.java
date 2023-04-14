@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class EncryptionFileScene {
@@ -30,7 +31,7 @@ public class EncryptionFileScene {
 
     private Utils utils;
 
-    private byte[] key;
+    private String key;
 
     private AES aes;
 
@@ -68,7 +69,7 @@ public class EncryptionFileScene {
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytes = fileToBytes.load(path);
                 areaToEncrypt = new TextArea();
-                areaToEncrypt.setText(utils.toString(bytes));
+                areaToEncrypt.setText(utils.bytesToHex(bytes));
                 areaToEncrypt.setLayoutX(10);
                 areaToEncrypt.setLayoutY(120);
                 pane.getChildren().add(areaToEncrypt);
@@ -105,7 +106,7 @@ public class EncryptionFileScene {
                     keyLabel = new Label();
                     keyLabel.setLayoutX(220);
                     keyLabel.setLayoutY(10);
-                    keyLabel.setText(utils.toString(key));
+                    keyLabel.setText(key);
                     keyLabel.setPrefWidth(500);
                     keyLabel.setMaxHeight(100);
                     keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -119,7 +120,7 @@ public class EncryptionFileScene {
                     fileChooser.setTitle("Select file to save");
                     String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                     try {
-                        bytesToFile.write(path, key);
+                        bytesToFile.write(path, utils.hexToByteArray(key));
                     } catch (IOException e) {
                         throw new RuntimeException("Nie udało się zapisać do pliku");
                     }
@@ -129,9 +130,9 @@ public class EncryptionFileScene {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     areaAfterEncrypting = new TextArea();
-                    aes = new AES(key, bytes);
-                    encryptedBytes = aes.encrypt();
-                    areaAfterEncrypting.setText(utils.toString(encryptedBytes));
+                    aes = new AES(utils.hexToByteArray(key));
+                    encryptedBytes = aes.encode(bytes);
+                    areaAfterEncrypting.setText(utils.bytesToHex(encryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);
@@ -169,11 +170,11 @@ public class EncryptionFileScene {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Open file with key");
                     String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
-                    key = fileToBytes.load(path);
+                    key = utils.bytesToHex(fileToBytes.load(path));
                     keyLabel = new Label();
                     keyLabel.setLayoutX(220);
                     keyLabel.setLayoutY(10);
-                    keyLabel.setText(utils.toString(key));
+                    keyLabel.setText(key);
                     keyLabel.setPrefWidth(500);
                     keyLabel.setMaxHeight(100);
                     keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -183,10 +184,10 @@ public class EncryptionFileScene {
             decrypt.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    aes = new AES(key, bytes);
-                    decryptedBytes = aes.decrypt();
+                    aes = new AES(utils.hexToByteArray(key));
+                    decryptedBytes = aes.decode(bytes);
                     areaAfterEncrypting = new TextArea();
-                    areaAfterEncrypting.setText(utils.toString(decryptedBytes));
+                    areaAfterEncrypting.setText(utils.bytesToHex(decryptedBytes));
                     areaAfterEncrypting.setLayoutX(510);
                     areaAfterEncrypting.setLayoutY(120);
                     pane.getChildren().add(areaAfterEncrypting);

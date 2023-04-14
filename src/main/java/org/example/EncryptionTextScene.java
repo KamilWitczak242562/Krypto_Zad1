@@ -36,7 +36,7 @@ public class EncryptionTextScene {
 
     private Utils utils;
 
-    private byte[] key;
+    private String key;
 
     private AES aes;
 
@@ -71,7 +71,7 @@ public class EncryptionTextScene {
                 fileChooser.setTitle("Select file to save");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 bytesToFile = new BytesToFile();
-                bytes = utils.textToBytes(areaAfterEncrypting.getText());
+                bytes = utils.hexToByteArray(areaAfterEncrypting.getText());
                 try {
                     bytesToFile.write(path, bytes);
                 } catch (IOException e) {
@@ -88,7 +88,7 @@ public class EncryptionTextScene {
                 keyLabel = new Label();
                 keyLabel.setLayoutX(220);
                 keyLabel.setLayoutY(10);
-                keyLabel.setText(utils.toString(key));
+                keyLabel.setText(key);
                 keyLabel.setPrefWidth(500);
                 keyLabel.setMaxHeight(100);
                 keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
@@ -103,7 +103,7 @@ public class EncryptionTextScene {
                 fileChooser.setTitle("Select file to save");
                 String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
                 try {
-                    bytesToFile.write(path, key);
+                    bytesToFile.write(path, utils.hexToByteArray(key));
                 } catch (IOException e) {
                     throw new RuntimeException("Nie udało się zapisać do pliku");
                 }
@@ -114,10 +114,10 @@ public class EncryptionTextScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
-                bytes = utils.textToBytes(areaToWrite.getText());
-                aes = new AES(key, bytes);
-                encryptedBytes = aes.encrypt();
-                areaAfterEncrypting.setText(utils.toString(encryptedBytes));
+                bytes = utils.hexToByteArray(areaToWrite.getText());
+                aes = new AES(utils.hexToByteArray(key));
+                encryptedBytes = aes.encode(bytes);
+                areaAfterEncrypting.setText(utils.bytesToHex(encryptedBytes));
                 areaAfterEncrypting.setLayoutX(510);
                 areaAfterEncrypting.setLayoutY(120);
                 pane.getChildren().add(areaAfterEncrypting);
@@ -127,9 +127,9 @@ public class EncryptionTextScene {
         decrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                aes = new AES(key, bytes);
-                decryptedBytes = aes.decrypt();
-                areaToWrite.setText(utils.toString(decryptedBytes));
+                aes = new AES(utils.hexToByteArray(key));
+                decryptedBytes = aes.decode(bytes);
+                areaToWrite.setText(utils.bytesToHex(decryptedBytes));
             }
         });
         generate.setPrefWidth(200);
