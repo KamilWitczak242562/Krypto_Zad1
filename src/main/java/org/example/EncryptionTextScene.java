@@ -13,8 +13,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class EncryptionTextScene {
     private AnchorPane pane;
@@ -114,7 +117,7 @@ public class EncryptionTextScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
-                bytes = utils.hexToByteArray(areaToWrite.getText());
+                bytes = areaToWrite.getText().getBytes(StandardCharsets.UTF_8);
                 aes = new AES(utils.hexToByteArray(key));
                 encryptedBytes = aes.encode(bytes);
                 areaAfterEncrypting.setText(utils.bytesToHex(encryptedBytes));
@@ -128,8 +131,16 @@ public class EncryptionTextScene {
             @Override
             public void handle(ActionEvent actionEvent) {
                 aes = new AES(utils.hexToByteArray(key));
+                bytes = encryptedBytes;
                 decryptedBytes = aes.decode(bytes);
-                areaToWrite.setText(utils.bytesToHex(decryptedBytes));
+                String hex = utils.bytesToHex(decryptedBytes);
+                byte[] bytes = new byte[0];
+                try {
+                    bytes = Hex.decodeHex(hex.toCharArray());
+                } catch (DecoderException e) {
+                    e.printStackTrace();
+                }
+                areaToWrite.setText(new String(bytes, StandardCharsets.UTF_8));
             }
         });
         generate.setPrefWidth(200);
