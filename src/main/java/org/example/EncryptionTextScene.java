@@ -11,42 +11,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class EncryptionTextScene {
     private AnchorPane pane;
     private Stage stage;
     private Scene scene;
     private GUI gui;
-
-    private String textToEncrypt;
-
+    private RSA rsa;
     private TextArea areaToWrite;
-
     private TextArea areaAfterEncrypting;
 
-    private Label keyLabel;
+    private Label keyE;
+    private Label keyD;
 
-    private BytesToFile bytesToFile;
-
-    private byte[] bytes;
-
-    private Utils utils;
-
-    private String key;
-
-    private AES aes;
-
-    private byte[] encryptedBytes;
-    private byte[] decryptedBytes;
 
     public EncryptionTextScene() {
+        rsa = new RSA();
         pane = new AnchorPane();
         stage = new Stage();
         scene = new Scene(pane, 1000, 500);
@@ -58,6 +39,29 @@ public class EncryptionTextScene {
     }
 
     private void addButtons() {
+        OurButton generate = new OurButton("Generuj", 10, 10);
+        generate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                rsa.generateKeys(256);
+                keyE = new Label();
+                keyE.setLayoutX(220);
+                keyE.setLayoutY(10);
+                keyE.setText(rsa.getD().toString());
+                keyE.setPrefWidth(500);
+                keyE.setMaxHeight(100);
+                keyE.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
+                pane.getChildren().add(keyE);
+                keyD = new Label();
+                keyD.setLayoutX(220);
+                keyD.setLayoutY(60);
+                keyD.setText(rsa.getN().toString());
+                keyD.setPrefWidth(500);
+                keyD.setMaxHeight(100);
+                keyD.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
+                pane.getChildren().add(keyD);
+            }
+        });
         OurButton back = new OurButton("Powrót", 840, 440);
         back.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -66,63 +70,14 @@ public class EncryptionTextScene {
                 gui = new GUI();
             }
         });
-        OurButton saveFile = new OurButton("Zapisz do pliku", 790, 60);
-        saveFile.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select file to save");
-                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
-                bytesToFile = new BytesToFile();
-                bytes = utils.hexToByteArray(areaAfterEncrypting.getText());
-                try {
-                    bytesToFile.write(path, bytes);
-                } catch (IOException e) {
-                    throw new RuntimeException("Nie udało się zapisać do pliku");
-                }
-            }
-        });
-        OurButton generate = new OurButton("Generuj klucz", 10, 10);
-        generate.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                utils = new Utils();
-                key = utils.getRandomKey();
-                keyLabel = new Label();
-                keyLabel.setLayoutX(220);
-                keyLabel.setLayoutY(10);
-                keyLabel.setText(key);
-                keyLabel.setPrefWidth(500);
-                keyLabel.setMaxHeight(100);
-                keyLabel.setStyle("-fx-font: 34 arial; -fx-border-color: black;");
-                pane.getChildren().add(keyLabel);
-            }
-        });
-        OurButton saveKey = new OurButton("Zapisz klucz", 790, 10);
-        saveKey.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select file to save");
-                String path = fileChooser.showOpenDialog(stage).getAbsolutePath();
-                try {
-                    bytesToFile.write(path, utils.hexToByteArray(key));
-                } catch (IOException e) {
-                    throw new RuntimeException("Nie udało się zapisać do pliku");
-                }
-            }
-        });
         OurButton encrypt = new OurButton("Szyfruj", 425, 400);
         encrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 areaAfterEncrypting = new TextArea();
-                bytes = areaToWrite.getText().getBytes(StandardCharsets.UTF_8);
-                aes = new AES(utils.hexToByteArray(key));
-                encryptedBytes = aes.encode(bytes);
-                areaAfterEncrypting.setText(utils.bytesToHex(encryptedBytes));
                 areaAfterEncrypting.setLayoutX(510);
                 areaAfterEncrypting.setLayoutY(120);
+                areaAfterEncrypting.setText(rsa.encryptString(areaToWrite.getText()));
                 pane.getChildren().add(areaAfterEncrypting);
             }
         });
@@ -130,28 +85,13 @@ public class EncryptionTextScene {
         decrypt.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                aes = new AES(utils.hexToByteArray(key));
-                bytes = encryptedBytes;
-                decryptedBytes = aes.decode(bytes);
-                String hex = utils.bytesToHex(decryptedBytes);
-                byte[] bytes = new byte[0];
-                try {
-                    bytes = Hex.decodeHex(hex.toCharArray());
-                } catch (DecoderException e) {
-                    e.printStackTrace();
-                }
-                areaToWrite.setText(new String(bytes, StandardCharsets.UTF_8));
+                areaToWrite.setText(rsa.decryptString(areaAfterEncrypting.getText()));
             }
         });
-        generate.setPrefWidth(200);
-        saveKey.setPrefWidth(200);
-        saveFile.setPrefWidth(200);
         pane.getChildren().add(encrypt);
-        pane.getChildren().add(generate);
-        pane.getChildren().add(saveKey);
         pane.getChildren().add(decrypt);
         pane.getChildren().add(back);
-        pane.getChildren().add(saveFile);
+        pane.getChildren().add(generate);
     }
 
     private void createTextArea() {
